@@ -3,6 +3,7 @@ using AutoMapper;
 using Commander.Data;
 using Commander.Dtos;
 using Commander.Models;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Commander.Controllers
@@ -140,6 +141,61 @@ namespace Commander.Controllers
             _repository.UpdateCommand(commandModelFromRepo);
 
             // Save changes
+            _repository.SaveChanges();
+
+            // Return 204 Status
+            return NoContent();
+        }
+
+        // Update Commands (mapped object)
+        // [PATCH] api/commands/{ID}
+        [HttpPatch("{id}")]
+        public ActionResult PartialCommandUpdate(int id, JsonPatchDocument<CommandUpdateDto> patchDoc)
+        {
+            // Check if command exists
+            var commandModelFromRepo = _repository.GetCommandById(id);
+            if (commandModelFromRepo == null)
+            {
+                return NotFound();
+            }
+
+            // We are receiving from the client, the patch document and we
+            // can't apply it directly to our Command model
+            var commandToPatch = _mapper.Map<CommandUpdateDto>(commandModelFromRepo);
+            patchDoc.ApplyTo(commandToPatch, ModelState);
+            
+            // Validation Check
+            if (!TryValidateModel(commandToPatch))
+            {
+                return ValidationProblem(ModelState);
+            }
+
+            // Update Model Data in the repostiory
+            _mapper.Map(commandToPatch, commandModelFromRepo);
+
+            _repository.UpdateCommand(commandModelFromRepo);
+
+            // Save Changes
+            _repository.SaveChanges();
+
+            return NoContent();
+        }
+
+        // Delete a command
+        // [DELETE] api/commands/{ID}
+        [HttpDelete("{id}")]
+        public ActionResult DeleteCommand(int id)
+        {
+            // Check if command exists
+            var commandModelFromRepo = _repository.GetCommandById(id);
+            if (commandModelFromRepo == null)
+            {
+                return NotFound();
+            }
+
+            _repository.DeleteCommand(commandModelFromRepo);
+
+            // Save 
             _repository.SaveChanges();
 
             // Return 204 Status

@@ -10,11 +10,13 @@ namespace Commander.Profiles
         {
             // What are we mapping from and to?
             // Source -> Target
-            CreateMap<Command, CommandReadDto>();
+            CreateMap<Command, CommandReadDto>(); // Dto for Get
 
-            CreateMap<CommandCreateDto, Command>();
+            CreateMap<CommandCreateDto, Command>(); // Dto for Post
 
-            CreateMap<CommandUpdateDto, Command>();
+            CreateMap<CommandUpdateDto, Command>(); // Dto for Put
+
+            CreateMap<Command, CommandUpdateDto>(); // Dto for Patch
         }
     }
 }

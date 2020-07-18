@@ -28,6 +28,19 @@ namespace Commander.Data
             _context.Commands.Add(cmd);
         }
 
+        public void DeleteCommand(Command cmd)
+        {
+            // throw new NotImplementedException();
+            
+            // Check to see if there's command 
+            if (cmd == null)
+            {
+                throw new ArgumentNullException(nameof(cmd));
+            }
+
+            _context.Commands.Remove(cmd);
+        }
+
         public IEnumerable<Command> GetAllCommands()
         {
             // throw new System.NotImplementedException();

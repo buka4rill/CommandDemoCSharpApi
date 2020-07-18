@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Serialization;
 
 namespace Commander
 {
@@ -32,7 +33,13 @@ namespace Commander
             services.AddDbContext<CommanderContext>(options => 
             options.UseSqlServer(Configuration.GetConnectionString("CommanderConnection")));
 
-            services.AddControllers();
+            // services.AddControllers();
+
+            // Newtonsoft Json Appended
+            // Newtonsoft is used for PATCH request
+            services.AddControllers().AddNewtonsoftJson(s => {
+                s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            });
 
             // Automapper Services
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
